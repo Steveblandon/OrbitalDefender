@@ -15,7 +15,7 @@ import com.example.steve.basicgame.R;
 public class LogicControl {
 
     //regular fields
-    private Paint paint, notiPaint, hudPaint;
+    private Paint paint, notiPaint, hudPaint, tempPaint;
     private int activePointer, secondPointer;
     private CoreView coreView; //to be be able to kill the engine
     private ScreenSize display;
@@ -29,6 +29,7 @@ public class LogicControl {
     private float dmu; //for inputHandler, down-move-up, the three touch actions we log, 0 for happened, 1 for it didn't, reset on every up
     private String notification; //displayed in middle of screen
     private int ticksTimer; //used to delay a piece of code from executing
+    private boolean timerOn;
 
     public LogicControl(Context context, CoreView coreView, ScreenSize display) {
         this.display = display;
@@ -69,7 +70,9 @@ public class LogicControl {
 
         //load sounds to be used
         sxs = new SoundManager(context);
-        sxs.load(SoundManager.CANNON_BLAST, R.raw.cannon_blast);
+        sxs.load("laser_shot", R.raw.laser_shot);
+        sxs.load("score_count", R.raw.score_count);
+        sxs.load("shield", R.raw.shield);
 
         //initialize player object
         objMgr = new ObjectManager();
@@ -236,7 +239,7 @@ public class LogicControl {
                         int scorePts = scoreMgr.hitPlanet(asteroid.getSize());
                         scoreMgr.setInstantScore(scorePts, asteroid.getCenterX(), asteroid.getCenterY(), objMgr);
                         //disable asteroid
-                        asteroid.disable();
+                        asteroid.explode(objMgr, gxs);
                         Log.i("update()", "asteroid hit planet");
                     }
                 }
@@ -364,7 +367,7 @@ public class LogicControl {
         }
         //text on screen
         if (notification != "")
-            canvas.drawText(notification, display.getWidth()/2, display.getHeight()/2, notiPaint);
+            canvas.drawText(notification, display.getWidth()/2, display.getHeight()/2 - 50, notiPaint);
         if (lvlMgr.isGameFinished()) notification = "Game Finished";
         if (lvlMgr.isGameOver()) notification = "Game Over";
 
@@ -389,10 +392,17 @@ public class LogicControl {
         
         //score readout at the end of every level
         if (lvlMgr.isLevelCompleted() || lvlMgr.isGameOver()){
+            if (lvlMgr.getLevel() == 0 && !coreView.isGamePaused()) {
+                coreView.delayedPause(1);
+                notification = "unpause game to start";
+                sxs.playMusic(R.raw.bgd_music);
+            }
+            else if (lvlMgr.getLevel() == 0) lvlMgr.increaseLevel();
             String[] readout;
             if (ticksTimer > 0) {
                 ticksTimer--;
                 readout = scoreMgr.getScoreReadout(false, (UIManager.StatusBar) ui.getComponents().get(UIManager.ENERGY_BAR));
+                if (ticksTimer == 0) sxs.play("score_count");
             }
             else readout = scoreMgr.getScoreReadout(true, (UIManager.StatusBar) ui.getComponents().get(UIManager.ENERGY_BAR));
             if (readout == null) lvlMgr.increaseLevel();
@@ -442,4 +452,6 @@ public class LogicControl {
     public void changeNotification(String string){
         notification = string;
     }
+
+    public SoundManager getsxs(){ return sxs;}
 }

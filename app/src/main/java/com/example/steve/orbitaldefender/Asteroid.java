@@ -16,15 +16,15 @@ public class Asteroid extends WorldObject {
     private int size;
 
 
-    public Asteroid(GraphicsManager gxs, float x, float y, int size) {
+    public Asteroid(GraphicsManager gxs, String size, float x, float y) {
         super(null, x, y);
-        modify(gxs, x, y, size, (float) (Math.random() * MaxDirection) + 10, (float) (Math.random() * speed), (float) (Math.random() * rot));
+        modify(gxs, size, x, y, (float) (Math.random() * MaxDirection) + 10, (float) (Math.random() * speed), (float) (Math.random() * rot));
     }
     
-    public Asteroid(GraphicsManager gxs, float x, float y, int size, float direction, float speed, float rot){
+    public Asteroid(GraphicsManager gxs, String size, float x, float y, float direction, float speed, float rot){
         //this constructor is to be used to be more specific about the asteroid's attributes
         super(null, x, y);
-        modify(gxs, x, y, size, direction, speed, rot);
+        modify(gxs, size, x, y , direction, speed, rot);
     }
 
     public void disable(ObjectManager objMgr){
@@ -32,14 +32,17 @@ public class Asteroid extends WorldObject {
         objMgr.asteroidDisabled();
     }
 
-    public void modify(GraphicsManager gxs, float x, float y, int size, float direction, float speed, float rot){
+    public void modify(GraphicsManager gxs, String size, float x, float y, float direction, float speed, float rot){
         //this method is to be used to modify asteroid's attributes during runtime
+        int sizeVal = 2;
         switch (size){
-            case 1:
+            case "small":
                 setBitmap(gxs.get(small_TAG));
+                sizeVal = 1;
                 break;
-            case 3:
+            case "large":
                 setBitmap(gxs.get(large_TAG));
+                sizeVal = 3;
                 break;
             default:
                 setBitmap(gxs.get(TAG));
@@ -47,7 +50,7 @@ public class Asteroid extends WorldObject {
         if (y == -1) y = -getBitmap().getHeight();
         setLocation(x, y);
         rotation = (float) (Math.random() * 360); //so it starts at a random angle
-        this.size = size;
+        this.size = sizeVal;
         this.direction = direction;
         this.speed = speed;
         this.rot = rot;
@@ -66,7 +69,7 @@ public class Asteroid extends WorldObject {
         //move diagonally, when its out of view, travel another screen width before entering view from opposite side
         if (getX() > screenSize.getWidth() + 100) setLocation(-getBitmap().getWidth(), getY());
         else if (getX() < -getBitmap().getWidth() * 2) {
-            direction = direction - 90;
+            direction --;
             setLocation(getX() + getBitmap().getWidth(), getY()); //move towards screen
         }
         else
@@ -86,14 +89,12 @@ public class Asteroid extends WorldObject {
         if (size > 1){
             for (int i = 0; i < size - 1; i++){
                 Asteroid asteroid = objMgr.getAsteroid(gxs);
-                asteroid.modify(gxs, getX(), getY(), 1, (float) (Math.random() * 360), (float) (Math.random() * 2) + speed, rot * 2);
+                asteroid.modify(gxs, "small", getX(), getY(), (float) (Math.random() * 90),
+                        (float) (Math.random() * speed) + speed/2, (float) (Math.random() * rot) + rot/2);
             }
             //turn this source asteroid into a chunk
-            size = 1;
-            setBitmap(gxs.get(Asteroid.small_TAG));
-            rot = rot * 2;
-            speed = (float) (Math.random() * 2) + speed;
-            direction = (float) (Math.random() * 360);
+            modify(gxs, "small", getX(), getY(), (float) (Math.random() * 90),
+                    (float) (Math.random() * speed) + speed/2, (float) (Math.random() * rot) + rot/2);
         }
     }
 

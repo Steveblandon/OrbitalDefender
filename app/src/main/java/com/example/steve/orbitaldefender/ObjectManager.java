@@ -46,7 +46,7 @@ public class ObjectManager {
                 asteroid = (Asteroid) object;
             }
         if (asteroid == null){ //no disabled asteroid objects were found, create a new one
-            asteroid = new Asteroid(gxs, 0, 0, 1);
+            asteroid = new Asteroid(gxs, "small", 0, 0);
             add(asteroid);
         }
         else asteroid.enable(0, -asteroid.getBitmap().getHeight(), true); //enable the asteroid outside the viewPort

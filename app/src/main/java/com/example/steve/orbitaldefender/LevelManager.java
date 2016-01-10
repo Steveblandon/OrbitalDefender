@@ -11,7 +11,7 @@ public class LevelManager {
     private LogicControl control;
     private ScreenSize display;
     private int level;
-    private final int LAST_LEVEL = 3;
+    private final int LAST_LEVEL = 4;
     private final int GAME_START_LVL = 1; //prior levels are for practice/tutorial, starting with this level the actual challenge starts
     private int step; //each level can have steps to orchestrate different timings for things to occur in the same level
     private int delayValue; //delay for spawning things at different times, valued at number of ticks
@@ -31,42 +31,27 @@ public class LevelManager {
 
     public void update(){
         //this method updates current level or initiates a new level
-        Asteroid asteroid = null; //use this as a placeholder
         switch (level){
-            case 0: //intro level, two small and slow asteroid step in, one delayed by 5 ticks
-                /*switch (step){
-                    case 0:
-                        objMgr.getAsteroid(gxs)
-                        asteroid.modify(gxs, 0, -1, 1, 45, 1, 5);
-                        Log.i("levelManager", "deploying asteroid 1");
-                        delay(180); //if presumably FPS is roughly 30, a delay of 180 would be 6 seconds
-                        break;
-                    case 1:
-                        objMgr.getAsteroid(gxs)
-                        asteroid.modify(gxs, asteroid.getBitmap().getWidth() * 2,
-                                -1, 1, 45, 1, 5);
-                        Log.i("levelManager", "deploying asteroid 2");
-                        break;
-                }*/
+            case 0:
+                break;
+            case 1:
+                //level 1, one large asteroid falling vertically
+                objMgr.getAsteroid(gxs).modify(gxs, "large", -100, -100, 45, (int) (Math.random() * 10), 5);
+                break;
+            case 2:
                 //2 small asteroids, 1 regular
-                objMgr.getAsteroid(gxs).modify(gxs, 500, -1, 1, 70, 2, 5);
-                objMgr.getAsteroid(gxs).modify(gxs, 250, -1, 2, 50, 4, 3);
-                objMgr.getAsteroid(gxs).modify(gxs, 750, -1, 1, 30, 6, 4);
+                objMgr.getAsteroid(gxs).modify(gxs, "small", 500, -1, 70, 2, 5);
+                objMgr.getAsteroid(gxs).modify(gxs, "", 250, -1, 50, 4, 3);
+                objMgr.getAsteroid(gxs).modify(gxs, "small", 750, -1, 30, 6, 4);
                 break;
-            case 1: //level 1, one asteroid falling vertically
-
-                for (int i = 0; i < 15; i++){
-                    objMgr.getAsteroid(gxs).modify(gxs, (float) (display.getWidth() * Math.random()), -1,
-                            1, 90, (int) (Math.random() * 5), 5);
-                }
+            case 3: //level 2, 3 regular asteroids
+                objMgr.getAsteroid(gxs).modify(gxs, "", 500, -1, 70, 2, 5);
+                objMgr.getAsteroid(gxs).modify(gxs, "", 250, -1, 50, 4, 3);
+                objMgr.getAsteroid(gxs).modify(gxs, "", 750, -1, 30, 6, 4);
                 break;
-            case 2: //level 2, 3 regular asteroids
-                objMgr.getAsteroid(gxs).modify(gxs, 500, -1, 2, 70, 2, 5);
-                objMgr.getAsteroid(gxs).modify(gxs, 250, -1, 2, 50, 4, 3);
-                objMgr.getAsteroid(gxs).modify(gxs, 750, -1, 2, 30, 6, 4);
-                break;
-            case 3: //level 3, large asteroid
-                objMgr.getAsteroid(gxs).modify(gxs, 500, -1, 3, 90, 5, 5);
+            case 4: //level 3, 2 large asteroids
+                objMgr.getAsteroid(gxs).modify(gxs, "large", -10, -10, 90, 5, 5);
+                objMgr.getAsteroid(gxs).modify(gxs, "large", 500, -1, 90, 5, 5);
                 break;
             default:
                 //finished game
@@ -93,8 +78,6 @@ public class LevelManager {
         //notify system level was completed if number of entities has reached zero
         if (objMgr.getActiveAsteroids() == 0 && !gameFinished && !gameOver){
             levelCompleted = true;
-            increaseLevel();
-            Log.i("levelMgr","level complete");
             //some pre-level-increase code should go here like a flash on the screen with a count down to the next level or a box with upgrades
             //score update should also probably go here
         }

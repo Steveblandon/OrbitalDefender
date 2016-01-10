@@ -4,20 +4,23 @@ package com.example.steve.orbitaldefender;
 import android.content.Context;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.media.SoundPool;
 import android.os.Build;
+import android.provider.MediaStore;
+
+import com.example.steve.basicgame.R;
 
 import java.util.HashMap;
 
 //queue sounds, stop sound if its playing so it can start from the beginning, restart sounds, etc.
 public class SoundManager {
 
-    //constants
-    public final static String CANNON_BLAST = "cannon_blast";
-
     private HashMap<String, Integer> sounds;
+    private HashMap<String, Integer> isPlaying;
     private Context context;
     private SoundPool soundPool;
+    private MediaPlayer mediaPlayer;
 
     public SoundManager(Context context){
         sounds = new HashMap<>();
@@ -59,6 +62,16 @@ public class SoundManager {
         loop	    loop mode (0 = no loop, -1 = loop forever)
         rate    	playback rate (1.0 = normal playback, range 0.5 to 2.0)
          */
-        soundPool.play(sounds.get(tag),1,1,0,0,1);
+        soundPool.play(sounds.get(tag), 1, 1, 0, 0, 1);
+    }
+
+    public void playMusic(int resId){
+        if (mediaPlayer == null) mediaPlayer = MediaPlayer.create(context, resId);
+        mediaPlayer.setLooping(true);
+        mediaPlayer.start();
+    }
+
+    public void stopMusic(){
+        if (mediaPlayer.isPlaying()) mediaPlayer.stop();
     }
 }

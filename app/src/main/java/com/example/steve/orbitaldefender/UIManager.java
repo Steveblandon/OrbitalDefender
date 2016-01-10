@@ -65,7 +65,7 @@ public class UIManager {
                     Spaceship spaceship = objMgr.getShip();
                     GraphicsManager.SheetAnimation cannonAnimation = gxs.getAnimation(Spaceship.TAG);
                     if (spaceship.isReady()){ //spaceship has a cool down timer that gets activated automatically from every shot
-                        //sxs.play(SoundManager.CANNON_BLAST); //OBSOLETE: no longer a cannon, no longer a projectile being launched
+                        sxs.play("laser_shot");
                         spaceship.shoot(objMgr.getLaser(gxs));
                         //cannonAnimation.play();
                         scoreMgr.firedShot();
@@ -80,6 +80,7 @@ public class UIManager {
                     //if (energyBar.getValue() > 0){ //only proceeds if there are any shields left to use
                         Spaceship player = objMgr.getShip();
                         Shield shield = objMgr.getShield(); //there should only be one active shield at any one time
+                    sxs.play("shield");
                         if (shield.getLifespan() == 0) { //need to set its attributes for the first time if this is 0
                             shield.enable(player.getCenterX(), player.getCenterY(), shield.getPaint(),
                                     120, 0.5f); //roughly 5 seconds, uses up 50% of shield energy, starts out very inefficient
